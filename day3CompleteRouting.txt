@@ -36,7 +36,7 @@ ip dhcp excluded-add 10.2.1.200 10.2.1.254
 !
 ip dhcp pool vlan10
   network 10.2.1.0 255.255.255.0
-  default-router 10.2.1.254
+  default-router 10.2.1.1
 !#ipasok d1 port e1/0 sa vlan 200
 config t
 int e1/0
@@ -51,7 +51,7 @@ ip dhcp excluded-add 10.2.1.250 10.2.1.254
 !
 ip dhcp pool vlan10
   network 10.2.1.0 255.255.255.0
-  default-router 10.2.1.254
+  default-router 10.2.1.2
 !
 !#ipasok D2 port e1/0 sa vlan 20
 config t
