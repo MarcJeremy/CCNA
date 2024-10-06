@@ -240,7 +240,21 @@ CYBERSECURITY TASK7: PROTECTING YOUR CORPORATE WEB APPS.
 EX.1 CREATE A FIREWALL POLICY NAMED PROWEBAPP1 TO OPEN
 WWW.WEB8.COM HAS HTTP AND HTTPS AS OPEN
 WWW.WEB9.COM HAS SSH AND DNS OPEN
-formula:       PROTOCOL    HACKER    VICTIM     PORT:
+formula:       PROTOCOL            HACKER    VICTIM     PORT:
+            tcp,udp,icmp,IP         any     web8,web9
+
+PORT    STATE SERVICE
+7/tcp   open  echo
+9/tcp   open  discard
+13/tcp  open  daytime
+19/tcp  open  chargen
+22/tcp  open  ssh
+23/tcp  open  telnet
+53/tcp  open  domain
+79/tcp  open  finger
+80/tcp  open  http
+443/tcp open  https
+
 config t
 no ip access-list extended PROWEBAPP1
 ip access-list extended PROWEBAPP1
@@ -248,6 +262,7 @@ Permit tcp any host www.web8.com eq 80 log
 Permit tcp any host www.web8.com eq 443 log
 Permit tcp any host www.web9.com eq 22 log
 Permit tcp any  host www.web9.com eq 53 log
+permit icmp any host www.web8.com log
 Interface Gi 3
  ip access-group PROWEBAPP1 in
  do sh ip access-list PROWEBAPP1
@@ -265,19 +280,20 @@ Interface Gi 3
  ip access-group PROWEBAPP2 in
  do sh ip access-list PROWEBAPP1
 
-EX.4 CREATE A FIREWALL POLICY NAMED PROWEBAPP4 TO OPEN
+EX.4 CREATE A FIREWALL POLICY NAMED ProtectWEB1 TO OPEN
 WWW.WEB8.COM HAS ping, dns, https OPEN
-WWW.WEB9.COM HAS everything OPEN!
+WWW.WEB9.COM HAS ssh, http, ping/icmp OPEN
 config t
-no ip access-list extended PROWEBAPP4
-ip access-list extended PROWEBAPP4
-Permit icmp any host www.web8.com
-Permit tcp any host www.web8.com eq 53
-Permit tcp any host www.web8.com eq 443
-Permit IP any host www.web9.com
+no ip access-list extended ProtectWEB1
+ip access-list extended ProtectWEB1
+Permit tcp any host www.web8.com eq 53 log
+Permit tcp any host www.web8.com eq 443 log
+Permit tcp any host www.web9.com eq 22 log
+Permit tcp any host www.web9.com eq 80 log
+permit icmp any host www.web9.com log
 Interface Gi 3
- ip access-group PROWEBAPP4 in
- do sh ip access-list PROWEBAPP4
+ ip access-group ProtectWEB1 in
+ do sh ip access-list ProtectWEB1
 
 EX.5 CREATE A FIREWALL POLICY NAMED LASTFWP TO OPEN
 WWW.WEB8.COM HAS ping, chargen, finger, http as Open
@@ -669,7 +685,105 @@ CSr, linuxdocker, pythondocker, Postman: RestApi.
 
 
 
+My SAmple
 
+conf t
+ip domain-name rivanit.com
+crypto key generate rsa
+
+
+
+ip ssh version 2
+ip ssh time-out 5
+end
+
+
+config t
+NO ip access-list standard NOBANKS
+ip access-list standard NOBANKS
+DENY 151.101.195.0 0.0.255.255
+DENY 45.79.222.0 0.0.0.255
+DENY 118.215.79.0 0.0.0.255
+DENY 104.18.29.0 0.0.0.255
+Permit Any
+Int Gi 1
+ ip access-group NOBANKS in
+ end
+
+
+config t
+NO ip access-list standard NOSalamin
+ip access-list standard NOSalamin
+PERMIT 10.11.0.0 0.0.255.255
+PERMIT 10.12.0.0 0.0.255.255
+PERMIT 10.31.0.0 0.0.255.255
+PERMIT 10.52.0.0 0.0.255.255
+PERMIT 10.32.0.0 0.0.255.255
+Int Gi 0/0/1
+ ip access-group NOSalamin in
+ end
+
+
+
+config t
+no access-list 1
+access-list 1 permit 10.11.1.0 0.0.255.255
+access-list 1 permit 10.12.1.0 0.0.255.255
+access-list 1 permit 10.31.1.0 0.0.255.255
+access-list 1 permit 10.52.1.0 0.0.255.255
+access-list 1 deny ANY
+do sh ip access-list 1
+
+
+
+FW-VPN-PH(config)#ip host www.web8.com 192.168.103.8
+
+
+ip host www.web5.com 192.168.103.5
+ip host www.web6.com 192.168.103.6
+
+
+
+config t
+no ip access-list extended LASTFWP
+ip access-list extended LASTFWP
+permit icmp any host www.web8.com log
+Permit tcp any host www.web8.com eq 79 log
+Permit tcp any host www.web8.com eq 19 log
+Permit tcp any host www.web8.com eq 80 log
+Permit tcp any host www.web9.com eq 22 log
+Permit tcp any  host www.web9.com eq 23 log
+Permit tcp any  host www.web9.com eq 13 log
+Permit tcp any host www.web9.com eq 53 log
+Permit tcp any  host www.web9.com eq 443 log
+Interface Gi 3
+ ip access-group LASTFWP in
+ do sh ip access-list LASTFWP
+
+
+
+config t
+no ip access-list extended LASTFWP2
+ip access-list extended LASTFWP2
+permit icmp any host www.web8.com log
+Permit tcp any host www.web8.com eq 80 log
+Permit tcp any host www.web8.com eq 443 log
+Permit tcp any host www.web9.com eq 23 log
+Permit tcp any host www.web9.com eq 22 log
+Permit tcp any  host www.web9.com eq 53 log
+Interface Gi 3
+ ip access-group LASTFWP2 in
+ do sh ip access-list LASTFWP2
+
+
+config t
+no ip access-list extended LASTFWP3
+ip access-list extended LASTFWP3
+Permit tcp any host www.web8.com eq 443 log
+Permit tcp any host www.web9.com eq 22 log
+Interface Gi 3
+ ip access-group LASTFWP3 in
+ do sh ip access-list LASTFWP3
 
 
 
