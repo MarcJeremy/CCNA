@@ -3,10 +3,10 @@ DNS IPv6: epldt.com.ph
 
 TASK1: Cisco Security Fundamentals.
 cmd
-ping 10.k.1.10
+ping 10.31.1.10
 
-c>nmap -sP 10.k.1.0/24    c>nmap -sP 10.k.100.0/24
-10.m.1.10?                   10.m.100.8
+c>nmap -sP 10.31.1.0/24    c>nmap -sP 10.31.100.0/24
+10.32.1.10?                   10.32.100.8
 TASK2: How to begin hacking Layer 3:
 HOw get all the IP address of your victim:
 
@@ -17,7 +17,8 @@ how to attack 139/445? because you DONT have a firewall!
 
 net  use  \\10.k.1.10\ipc$  "attacks 139, and connects to it."
 "privilege escalation"
-net  use  s: \\10.k.1.10\c$  /user:administrator
+net use x: /delete
+net use x: \\10.31.1.10\c$  /user:administrator
 
 SERVICES VS PORTS:
 WEB SERVER RUNS ON PORT 80, IF YOUR CLASSMATE PORT 80 OPEN? IT IS A WEB SERVER!
@@ -37,9 +38,25 @@ FROM ENTERING YOUR NETWORK.
 step1: give Unlimited internet to EDGE:
 @edge
 CONFIG T
-IP ROUTE 0.0.0.0  0.0.0.0 200.0.0.1
+no logging console
+Int Gi 2
+no shut
+ip add 192.168.102.5 255.255.255.0
+
+@Telnet SecureCRT: telnet 192.168.102.5
+IP ROUTE 0.0.0.0  0.0.0.0 192.168.108.2
 ip name-server 8.8.8.8
 ip domain-lookup
+
+int gi 1
+no shut
+ip add 192.168.108.5 255.255.255.0
+int gi 3
+no shut
+ip add 192.168.103.5 255.255.255.0
+
+
+
 ALL THE PORN SITES THE WORLD ARE OWNED BY 5 COMPANIES:
 
 config t
@@ -51,8 +68,22 @@ DENY 68.235.0.0 0.0.255.255
 DENY 104.17.0.0 0.0.255.255
 DENY 88.208.0.0 0.0.255.255
 Permit Any
-Int Gi 0/0/1
+Int Gi 1
  ip access-group NOPORN1 in
+ end
+
+Task 1.2 Block admu.edu.ph. dlsu.edu.ph, ccp.edu.ph
+
+config t
+NO ip access-list standard NOEDUC
+ip access-list standard NOEDUC
+DENY 155.137.92.0 0.0.0.255
+DENY 172.67.14.0 0.0.0.255
+DENY 50.6.160.0 0.0.0.255
+DENY 184.168.125.0 0.0.0.255
+Permit Any
+Int Gi 1
+ ip access-group NOEDUC in
  end
 
 TASK2: USE STANDARD ACCESS-LIST TO BLOCK OTHER CONTRIES/CLASSMATE:
